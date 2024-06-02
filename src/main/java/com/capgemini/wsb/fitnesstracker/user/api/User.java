@@ -18,18 +18,27 @@ public class User {
     @Nullable
     private Long id;
 
+    @Getter
     @Setter
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
+    @Nullable
+    public Long getId() {
+        return id;
+    }
+
+    @Getter
     @Setter
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
+    @Getter
     @Setter
     @Column(name = "birthdate", nullable = false)
     private LocalDate birthdate;
 
+    @Getter
     @Setter
     @Column(nullable = false, unique = true)
     private String email;

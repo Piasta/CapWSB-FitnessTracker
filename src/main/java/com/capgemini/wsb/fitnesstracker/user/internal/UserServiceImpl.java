@@ -6,7 +6,9 @@ import com.capgemini.wsb.fitnesstracker.user.api.UserProvider;
 import com.capgemini.wsb.fitnesstracker.user.api.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -82,6 +84,10 @@ class UserServiceImpl implements UserService, UserProvider {
 
         if (updatedUserDto.email() != null) {
             existingUser.setEmail(updatedUserDto.email());
+        }
+
+        if (updatedUserDto.birthdate() != null) {
+            existingUser.setBirthdate(updatedUserDto.birthdate());
         }
 
         return userRepository.save(existingUser);

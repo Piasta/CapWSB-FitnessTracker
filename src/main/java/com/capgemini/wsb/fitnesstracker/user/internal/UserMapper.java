@@ -25,7 +25,9 @@ class UserMapper {
     UserSummaryDto toSummaryDto(User user) {
         return new UserSummaryDto(
                 user.getId(),
-                user.getFirstName());
+                user.getFirstName(),
+                user.getLastName());
+
     }
 
 }

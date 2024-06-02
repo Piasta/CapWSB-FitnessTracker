@@ -56,4 +56,5 @@ public interface UserProvider {
      * @return A list of users whose birthdate is after the specified date
      */
     List<User> findUsersByBirthdateAfter(LocalDate startDate);
+
 }

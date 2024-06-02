@@ -110,7 +110,7 @@ class TrainingApiIntegrationTest extends IntegrationTestBase {
         Training training2 = persistTraining(generateTrainingWithActivityType(user1, ActivityType.TENNIS));
         Training training3 = persistTraining(generateTrainingWithActivityType(user1, ActivityType.TENNIS));
 
-        mockMvc.perform(get("/v1/trainings/activityType").param("activityType", "TENNIS").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/v1/trainings/activityType/{activityType}", "TENNIS").contentType(MediaType.APPLICATION_JSON))
                 .andDo(log())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -133,16 +133,23 @@ class TrainingApiIntegrationTest extends IntegrationTestBase {
 
         User user1 = existingUser(generateClient());
 
-        String requestBody = """
-                {
-                    "userId": "%s",
-                    "startTime": "2024-04-01T11:00:00",
-                    "endTime": "2024-04-01T11:00:00",
-                    "activityType": "RUNNING",
-                    "distance": 10.52,
-                    "averageSpeed": 8.2
-                }
-                """.formatted(user1.getId());
+        String requestBody = String.format("""
+            {
+                "user": {
+                    "id": "%s",
+                    "firstName": "%s",
+                    "lastName": "%s",
+                    "birthdate": "%s",
+                    "email": "%s"
+                },
+                "startTime": "2024-04-01T11:00:00",
+                "endTime": "2024-04-01T11:00:00",
+                "activityType": "RUNNING",
+                "distance": 10.52,
+                "averageSpeed": 8.2
+            }
+            """, user1.getId(), user1.getFirstName(), user1.getLastName(), user1.getBirthdate(), user1.getEmail());
+
         mockMvc.perform(post("/v1/trainings").contentType(MediaType.APPLICATION_JSON).content(requestBody))
                 .andDo(log())
                 .andExpect(status().isCreated())

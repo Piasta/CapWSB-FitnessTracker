@@ -3,13 +3,15 @@ package com.capgemini.wsb.fitnesstracker.user.internal;
 import com.capgemini.wsb.fitnesstracker.user.api.User;
 import com.capgemini.wsb.fitnesstracker.user.api.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.repository.query.Param;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/v1/users")
@@ -21,26 +23,29 @@ class UserController {
     private final UserMapper userMapper;
 
     @GetMapping
-    public List<UserSummaryDto> getAllUsers() {
+    public List<UserDto> getAllUsers() {
         return userService.findAllUsers()
                           .stream()
-                          .map(userMapper::toSummaryDto)
+                          .map(userMapper::toDto)
                           .toList();
     }
 
+    @GetMapping("/simple")
+    public List<UserSummaryDto> getAllUsersBasicInfo() {
+        return userService.findAllUsers()
+                .stream()
+                .map(userMapper::toSummaryDto)
+                .toList();
+    }
+
     @PostMapping
-    public User addUser(@RequestBody UserDto userDto) throws InterruptedException {
-
-        // Demonstracja how to use @RequestBody
-        System.out.println("User with e-mail: " + userDto.email() + "passed to the request");
-
-        // TODO: saveUser with Service and return User
+    public ResponseEntity<User> addUser(@RequestBody UserDto userDto) throws InterruptedException {
+        System.out.println("User with e-mail: " + userDto.email() + " passed to the request");
 
         User user = userMapper.toEntity(userDto);
-
         User savedUser = userService.createUser(user);
 
-        return savedUser;
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
     @GetMapping("/{id}")
@@ -73,10 +78,24 @@ class UserController {
                 .toList();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUserById(@PathVariable Long id) {
-        userService.deleteUserById(id);
-        return ResponseEntity.ok().build();
+    @GetMapping("/email")
+    public ResponseEntity<UserDto> getUserByEmail(@RequestParam String email) {
+        Optional<User> user = userService.getUserByEmail(email);
+        return user.map(value -> ResponseEntity.ok(userMapper.toDto(value)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/older/{date}")
+    public ResponseEntity<List<User>> getUsersOlderThan(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        List<User> users = userService.findUsersByBirthdateAfter(date);
+        return ResponseEntity.ok(users);
+    }
+
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<?> deleteUserById(@PathVariable Long userId) {
+        userService.deleteUserById(userId);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
