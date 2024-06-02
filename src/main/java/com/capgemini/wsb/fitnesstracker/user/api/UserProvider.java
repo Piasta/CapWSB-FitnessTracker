@@ -1,5 +1,6 @@
 package com.capgemini.wsb.fitnesstracker.user.api;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,4 +31,29 @@ public interface UserProvider {
      */
     List<User> findAllUsers();
 
+    /**
+     * Retrieves users based on their first name and last name.
+     *
+     * @param firstName The first name of the user to be searched
+     * @param lastName The last name of the user to be searched
+     * @return A list of users matching the first name and last name
+     */
+    List<User> findUsersByFirstNameAndLastName(String firstName, String lastName);
+
+    /**
+     * Retrieves users based on their birthdate.
+     *
+     * @param birthdate The birthdate of the user to be searched
+     * @return A list of users matching the birthdate
+     */
+    List<User> findUsersByBirthdate(LocalDate birthdate);
+
+    /**
+     * Retrieves users based on their birthdate being after the specified date,
+     * effectively returning users older than a given age.
+     *
+     * @param startDate The minimum birthdate of the users to be retrieved
+     * @return A list of users whose birthdate is after the specified date
+     */
+    List<User> findUsersByBirthdateAfter(LocalDate startDate);
 }

@@ -22,4 +22,10 @@ class UserMapper {
                         userDto.email());
     }
 
+    UserSummaryDto toSummaryDto(User user) {
+        return new UserSummaryDto(
+                user.getId(),
+                user.getFirstName());
+    }
+
 }
